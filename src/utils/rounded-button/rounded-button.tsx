@@ -8,10 +8,12 @@ const RoundedButton = ({
   name,
   size,
   color,
+  onPress,
 }: {
   name: any;
   size: number;
   color: string;
+  onPress: () => void;
 }) => {
   const scale = useRef(new Animated.Value(1)).current;
 
@@ -30,7 +32,10 @@ const RoundedButton = ({
     <TouchableWithoutFeedback
       onPressIn={() => animatedScale(0.8)}
       delayPressIn={0}
-      onPressOut={() => animatedScale(1)}
+      onPressOut={() => {
+        animatedScale(1);
+        onPress();
+      }}
       delayPressOut={100}>
       <Animated.View style={[styles.container, {transform: [{scale}]}]}>
         <Icon name={name} size={size} color={color} />

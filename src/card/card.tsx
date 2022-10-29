@@ -2,6 +2,7 @@ import * as React from 'react';
 import {useCallback} from 'react';
 import {Animated, Image, ImageSourcePropType, Text, View} from 'react-native';
 import Choice from '../choice/choice';
+import {ACTION_OFFSET} from '../utils/constants';
 import {styles} from './styles';
 
 const Card = ({
@@ -9,27 +10,58 @@ const Card = ({
   source,
   isFirst,
   swipe,
+  tiltSign,
   ...rest
 }: {
   name: string;
   source: ImageSourcePropType;
   isFirst: boolean;
   swipe: any;
+  tiltSign: any;
 }) => {
+  const rotate = Animated.multiply(swipe.x, tiltSign).interpolate({
+    inputRange: [-ACTION_OFFSET, 0, ACTION_OFFSET],
+    outputRange: ['8deg', '0deg', '-8deg'],
+  });
+
+  const animatedCardStyle = {
+    transform: [...swipe.getTranslateTransform(), {rotate}],
+  };
+
+  const likeOpacity = swipe.x.interpolate({
+    inputRange: [30, ACTION_OFFSET],
+    outputRange: [0, 1],
+    extrapolate: 'clamp',
+  });
+
+  const nopeOpacity = swipe.x.interpolate({
+    inputRange: [-ACTION_OFFSET, -30],
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
+  });
+
   const renderChoice = useCallback(() => {
     return (
       <>
-        <View style={[styles.choiceContainer, styles.likeContainer]}>
+        <Animated.View
+          style={[
+            styles.choiceContainer,
+            styles.likeContainer,
+            {opacity: likeOpacity},
+          ]}>
           <Choice type={'like'} />
-        </View>
-        <View style={[styles.choiceContainer, styles.nopeContainer]}>
+        </Animated.View>
+        <Animated.View
+          style={[
+            styles.choiceContainer,
+            styles.nopeContainer,
+            {opacity: nopeOpacity},
+          ]}>
           <Choice type={'nope'} />
-        </View>
+        </Animated.View>
       </>
     );
-  }, []);
-
-  const animatedCardStyle = {transform: [...swipe.getTranslateTransform()]};
+  }, [likeOpacity, nopeOpacity]);
 
   return (
     <Animated.View
