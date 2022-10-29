@@ -1,10 +1,11 @@
 import * as React from 'react';
+import {memo} from 'react';
 import {View} from 'react-native';
 import {COLORS} from '../utils/constants';
 import RoundedButton from '../utils/rounded-button/rounded-button';
 import {styles} from './styles';
 
-const Footer = ({handleChoice}: {handleChoice: any}) => {
+const Footer = memo(({handleChoice}: {handleChoice: any}) => {
   return (
     <View style={styles.container}>
       <RoundedButton
@@ -21,6 +22,6 @@ const Footer = ({handleChoice}: {handleChoice: any}) => {
       />
     </View>
   );
-};
+});
 
 export default Footer;
